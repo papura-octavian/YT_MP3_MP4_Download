@@ -1,79 +1,86 @@
 # YouTube MP3 / MP4 Downloader (GUI)
 
-Aplicație desktop simplă (Python + CustomTkinter) pentru descărcat videoclipuri sau playlist‑uri de pe YouTube în format **MP3** sau **MP4**.
+Simple desktop application (Python + CustomTkinter) for downloading YouTube **videos** or **playlists** as **MP3** or **MP4** files.
 
-Suportă:
-- videoclip individual sau playlist (`https://youtube.com/playlist?...`)
-- descărcare în **MP3** (cu bitrate configurabil) sau **MP4**
-- salvare într‑un folder ales de utilizator
-- descărcare listă de linkuri din fișier `.txt`
-- alegerea „clientului” YouTube (web / android / ios / tv)
-- folosirea cookie‑urilor din browser (pentru cont logat, YouTube Premium etc.)
-- mini‑consolă de log în interfață
+Features:
+
+* Download a **single video** or an entire **playlist** (`https://youtube.com/playlist?...`)
+* Download as **MP3** (configurable bitrate) or **MP4**
+* Save to a user-chosen folder
+* Download from a list of links stored in a `.txt` file
+* Choose YouTube “client” (web / android / ios / tv)
+* Optional browser cookies support (for logged-in accounts, YouTube Premium, etc.)
+* Built-in mini console for logs
 
 ---
 
-## Structura proiectului
+## Project structure
 
-Recomandat:
-Recomandat:
+Recommended:
 
 ```text
 yt_mp3_mp4_downlaoder/
 ├── main.py
 ├── ffmpeg/
 │   ├── linux/
-│   │   ├── ffmpeg        # binar pentru Linux (fără extensie)
-│   │   └── ffprobe       # binar pentru Linux (fără extensie)
+│   │   ├── ffmpeg        # Linux binary (no extension)
+│   │   └── ffprobe       # Linux binary (no extension)
 │   └── windows/
-│       ├── ffmpeg.exe    # binar pentru Windows
-│       └── ffprobe.exe   # binar pentru Windows
+│       ├── ffmpeg.exe    # Windows binary
+│       └── ffprobe.exe   # Windows binary
 ├── README.md
 └── ...
 ```
 
-> Notă: dacă ffmpeg nu este găsit în aceste directoare, aplicația încearcă să folosească **ffmpeg din PATH** (instalat în sistem).
+> Note: if ffmpeg is not found in these folders, the app will try to use **ffmpeg from the system PATH** (if installed).
 
 ---
 
-## Cerințe
+## Requirements
 
-- **Python 3.10+** (recomandat 3.12)
-- Pachete Python:
-  - `customtkinter`
-  - `yt-dlp`
-- **ffmpeg** și **ffprobe** disponibile:
-  - fie incluse în folderul `ffmpeg/` din proiect (vezi structura de mai sus)
-  - fie instalate în sistem (disponibile în PATH)
+* **Python 3.10+** (3.12 recommended)
+* Python packages:
+
+  * `customtkinter`
+  * `yt-dlp`
+* **ffmpeg** and **ffprobe** must be available:
+
+  * either included in the `ffmpeg/` folder (see structure above)
+  * or installed system-wide (available in PATH)
 
 ---
 
-## Instalare (Linux)
+## Installation (Linux)
 
-1. Clonează / descarcă proiectul:
+1. Clone / download the project:
+
    ```bash
-   git clone <link-repo>
-   cd Cantari-de-Slava
+   git clone <repo-url>
+   cd yt_mp3_mp4_downlaoder
    ```
 
-2. Creează și activează un virtual env (opțional, dar recomandat):
+2. Create and activate a virtual environment (optional, but recommended):
+
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
 
-3. Instalează dependențele:
+3. Install dependencies:
+
    ```bash
    pip install customtkinter yt-dlp
    ```
 
-4. Instalează ffmpeg în sistem (dacă nu vrei să îl pui în folderul `ffmpeg/linux`):
+4. Install ffmpeg in the system (if you don’t want to bundle it inside `ffmpeg/linux`):
+
    ```bash
    sudo apt update
    sudo apt install ffmpeg
    ```
 
-5. (Opțional) Copiază binarele locale în structura proiectului:
+5. (Optional) Copy system binaries into the project structure:
+
    ```bash
    mkdir -p ffmpeg/linux
    cp /usr/bin/ffmpeg ffmpeg/linux/
@@ -81,141 +88,183 @@ yt_mp3_mp4_downlaoder/
    chmod +x ffmpeg/linux/ffmpeg ffmpeg/linux/ffprobe
    ```
 
-6. Rulează aplicația:
+6. Run the application:
+
    ```bash
    python main.py
    ```
 
 ---
 
-## Instalare (Windows)
+## Installation (Windows)
 
-1. Descarcă proiectul sau clonează cu Git.
-2. Instalează Python (bifează „Add Python to PATH”).
-3. În folderul proiectului, deschide Command Prompt / PowerShell:
+1. Download or clone the project.
+
+2. Install Python (make sure to tick **“Add Python to PATH”** during setup).
+
+3. Inside the project folder, open Command Prompt / PowerShell:
+
    ```bash
    python -m venv .venv
    .venv\Scripts\activate
    pip install customtkinter yt-dlp
    ```
-4. Descarcă ffmpeg pentru Windows:
-   - de pe site‑ul oficial sau din distribuție pre‑compilată
-   - pune binarul `ffmpeg.exe` în:
-     ```text
-     ffmpeg/windows/ffmpeg.exe
-     ```
-5. Rulează aplicația:
+
+4. Download ffmpeg for Windows:
+
+   * from the official website or a pre-built distribution
+   * place the binaries like this:
+
+   ```text
+   ffmpeg/windows/ffmpeg.exe
+   ffmpeg/windows/ffprobe.exe
+   ```
+
+   If you prefer using a system-wide installation (e.g. via `choco install ffmpeg`), that also works – the app will detect ffmpeg from PATH.
+
+5. Run the application:
+
    ```bash
    python main.py
    ```
 
-Dacă ffmpeg este deja în PATH (ex: prin `choco install ffmpeg`), aplicația îl poate folosi direct.
-
 ---
 
-## Cum funcționează aplicația (GUI)
+## How to use the app (GUI)
 
-1. **Alege destinația**
-   - Sus, apasă pe butonul `📁 Alege destinația…`
-   - Selectează folderul unde vrei să fie salvate fișierele (MP3/MP4)
+1. **Choose destination folder**
 
-2. **Introdu linkul**
-   - În câmpul mare de text: lipește un link de **video** sau de **playlist** YouTube.
+   * Click `📁 Choose destination…`
+   * Select the folder where MP3/MP4 files should be saved.
 
-3. **Alege formatul**
-   - Din meniul „Format” selectezi:
-     - `MP3` – descarcă audio + convertește în MP3
-     - `MP4` – descarcă video (cel mai bun MP4 disponibil)
-   - Dacă alegi MP3, poți seta bitrate-ul (128 / 192 / 256 / 320 kbps).  
-     Recomandare: `192 kbps` (compatibil cu multe playere auto).
+2. **Enter the link**
+
+   * Paste a YouTube **video** or **playlist** link in the big entry field.
+
+3. **Choose format**
+
+   * In the “Format” menu select:
+
+     * `MP3` – download audio and convert to MP3
+     * `MP4` – download video (best available MP4)
+   * When MP3 is selected, you can choose bitrate: `128 / 192 / 256 / 320` kbps.
+     Recommended: **192 kbps** (very compatible with car stereos).
 
 4. **Client & cookies**
-   - `Client`: modul în care se prezintă aplicația către YouTube:
-     - `android`, `web`, `ios`, `tv`
-   - `Folosește cookies din browser`:
-     - dacă bifezi, yt-dlp va extrage cookie-urile din browserul ales (Chrome / Firefox / Edge / Brave)
-     - util pentru:
-       - videouri doar pentru membri
-       - cont YouTube Premium
-       - restricții de vârstă / regiune
 
-5. **User-Agent (opțional)**
-   - Poți lăsa gol (aplicația folosește un UA implicit).
-   - Dacă ai probleme cu anumite request‑uri, poți pune un User-Agent personalizat.
+   * **Client**: how the app identifies itself to YouTube:
 
-6. **Descarcă un singur link**
-   - Apasă **„⬇️ Descarcă linkul în destinația aleasă”**
-   - Progresul este afișat în:
-     - bara de progres
-     - eticheta de status (titlu, procent, viteză, ETA)
-     - mini‑consola de jos (log detaliat)
+     * `android`, `web`, `ios`, `tv`
+   * **Use browser cookies**:
 
-7. **Descarcă o listă de linkuri (fișier TXT)**
-   - Pregătește un fișier `.txt` cu:
-     - un link pe linie
-     - liniile care încep cu `#` sunt ignorate (comentarii)
-   - Apasă **„📄 Alege fișier linkuri (TXT)”** și selectează fișierul.
-   - Apoi apasă **„🗂️ Procesează toată lista (MP3/MP4) în destinația aleasă”**.
-   - Aplicația va descărca toate linkurile, unul câte unul.
-   - Eticheta „Elementul X/Y” indică progresul în listă.
+     * when checked, yt-dlp will read cookies from the selected browser (Chrome / Firefox / Edge / Brave)
+     * useful for:
 
----
+       * members-only videos
+       * YouTube Premium
+       * age / region restricted content
 
-## Suport pentru playlist-uri YouTube
+5. **User-Agent (optional)**
 
-Aplicația acceptă direct linkuri de tip:
+   * You can leave this field empty (a default User-Agent string will be used).
+   * If you run into site-specific issues, you can paste a custom UA.
 
-- `https://youtube.com/playlist?list=...`
-- sau `https://www.youtube.com/watch?v=...&list=...`
+6. **Download a single link**
 
-Setări relevante:
-- `noplaylist = False` – permite descărcarea întregului playlist.
-- `outtmpl`: poate fi setat să nu includă numele playlist‑ului în calea de salvare, de ex:
-  ```python
-  "outtmpl": str(outdir / "%(title)s.%(ext)s"),
-  ```
-  astfel, fiecare playlist nu mai creează automat propriul folder.
+   * Click **“⬇️ Download single link to destination”**
+   * Progress is shown in:
+
+     * the progress bar
+     * the status label (title, percent, speed, ETA)
+     * the console at the bottom (detailed log)
+
+7. **Download from a list (TXT file)**
+
+   * Prepare a `.txt` file with:
+
+     * one URL per line
+     * lines starting with `#` are treated as comments and ignored
+   * Click **“📄 Choose links file (TXT)”** and select the file.
+   * Then click **“🗂️ Process whole list (MP3/MP4) to destination”**.
+   * The app will download each link in order.
+   * The label `Item X/Y` shows overall batch progress.
 
 ---
 
-## Erori frecvente și soluții
+## Playlist support
+
+The app accepts playlist URLs such as:
+
+* `https://youtube.com/playlist?list=...`
+* `https://www.youtube.com/watch?v=...&list=...`
+
+For playlists:
+
+* each item is saved as
+  `Destination/<Playlist Title>/<Video Title>.<ext>`
+* for single videos (non-playlist URLs), files are saved directly as
+  `Destination/<Video Title>.<ext>` (no extra folder).
+
+---
+
+## Common errors & troubleshooting
 
 ### 1. HTTP Error 503: Service Unavailable
 
-Cauze posibile:
-- problemă temporară pe serverele YouTube / CDN
-- throttling / rate limit (prea multe request-uri într-un timp scurt)
-- probleme de rețea / IP
+Possible causes:
 
-Ce poți face:
-- încearcă din nou mai târziu
-- schimbă „Client” (ex: de la `android` la `web`)
-- bifează „Folosește cookies din browser” și selectează browserul tău
-- încearcă de pe altă conexiune la internet
+* temporary issues on YouTube / CDN side
+* throttling / rate limiting (too many requests in a short time)
+* unstable or blocked network / IP
+
+What you can try:
+
+* try again later
+* change **Client** (e.g. from `android` to `web`)
+* enable **Use browser cookies** and select your browser
+* try from a different network connection
 
 ### 2. ERROR: Requested format is not available
 
-YouTube nu oferă formatul cerut (de ex., nu există MP4 la rezoluția dorită pe clientul ales).
+YouTube does not provide the requested format (for example, a certain MP4 combination for that client).
 
-Soluții:
-- schimbă `Client` (ex: `android` → `web`)
-- schimbă formatul de descărcare (MP3 / MP4)
-- încearcă fără setări speciale de format (aplicația deja are fallback la `best`).
+What you can try:
+
+* change **Client** (e.g. `android` → `web`)
+* switch between **MP3** and **MP4**
+* keep the default “best” format settings (the app already falls back to the best available stream).
+
+### 3. ERROR: ffmpeg / ffprobe not found
+
+If ffmpeg or ffprobe are missing, MP3 conversion and some MP4 operations will fail.
+
+Fixes:
+
+* install ffmpeg system-wide
+  (Linux example: `sudo apt install ffmpeg`)
+* or place both binaries in the project under:
+
+  * `ffmpeg/linux/ffmpeg` & `ffmpeg/linux/ffprobe` (Linux)
+  * `ffmpeg/windows/ffmpeg.exe` & `ffmpeg/windows/ffprobe.exe` (Windows)
+* make sure they are executable (on Linux: `chmod +x ffmpeg/linux/*`).
 
 ---
 
-## Note tehnice (intern)
+## Technical notes
 
-- Download logic bazat pe `yt_dlp.YoutubeDL` cu:
-  - `retries = 10`
-  - `fragment_retries = 10`
-  - `concurrent_fragment_downloads = 1`
-  - `http_chunk_size = 10 * 1024 * 1024`
-- Logger custom (`YTDLogger`) care trimite mesajele în mini‑consola UI.
-- `detect_ffmpeg_location()`:
-  - caută ffmpeg în:
-    - folderul aplicației / PyInstaller (`sys._MEIPASS` dacă există)
-    - `ffmpeg/`, `ffmpeg/windows`, `ffmpeg/linux`
-  - dacă nu găsește nimic, lasă yt‑dlp să caute ffmpeg în PATH.
+* Download logic uses `yt_dlp.YoutubeDL` with:
 
----
+  * `retries = 10`
+  * `fragment_retries = 10`
+  * `concurrent_fragment_downloads = 1`
+  * `http_chunk_size = 10 * 1024 * 1024`
+* A custom logger (`YTDLogger`) redirects yt-dlp output into the GUI console.
+* `detect_ffmpeg_location()`:
+
+  * first tries to find `ffmpeg` and `ffprobe` in **PATH**
+  * if not found, looks in the project directory (`sys._MEIPASS` when bundled) under:
+
+    * `ffmpeg/linux/`
+    * `ffmpeg/windows/`
+  * returns the path to `ffmpeg` so yt-dlp can use it for post-processing.
+
