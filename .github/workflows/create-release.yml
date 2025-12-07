@@ -1,0 +1,83 @@
+name: Create Release
+
+on:
+  workflow_run:
+    workflows: ["Build Windows Installer", "Build Linux AppImage"]
+    types:
+      - completed
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.event.workflow_run.head_branch, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.event.workflow_run.head_branch }}" == refs/tags/v* ]]; then
+            VERSION=${GITHUB_EVENT_WORKFLOW_RUN_HEAD_BRANCH#refs/tags/v}
+          else
+            VERSION="1.0.0"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Tag version: $VERSION"
+      
+      - name: Download Windows installer artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-installer
+          path: artifacts/windows
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      
+      - name: Download Linux AppImage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-appimage
+          path: artifacts/linux
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      
+      - name: Prepare release notes
+        id: notes
+        run: |
+          if [ -f RELEASE_NOTES.md ]; then
+            NOTES=$(cat RELEASE_NOTES.md)
+          else
+            NOTES="# Release ${{ steps.version.outputs.version }}\n\nYouTube MP3/MP4 Downloader release.\n\n## Downloads\n\n- **Windows**: yt_mp3_mp4_download-setup-${{ steps.version.outputs.version }}.exe\n- **Linux**: yt_mp3_mp4_download-${{ steps.version.outputs.version }}-x86_64.AppImage"
+          fi
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Find installer files
+        id: files
+        run: |
+          WIN_FILE=$(find artifacts/windows -name "*.exe" -type f | head -1)
+          LINUX_FILE=$(find artifacts/linux -name "*.AppImage" -type f | head -1)
+          echo "win_file=$WIN_FILE" >> $GITHUB_OUTPUT
+          echo "linux_file=$LINUX_FILE" >> $GITHUB_OUTPUT
+          echo "Windows installer: $WIN_FILE"
+          echo "Linux AppImage: $LINUX_FILE"
+          if [ -z "$WIN_FILE" ] || [ -z "$LINUX_FILE" ]; then
+            echo "ERROR: Could not find installer files!"
+            exit 1
+          fi
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.workflow_run.head_branch }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: ${{ steps.notes.outputs.notes }}
+          files: |
+            ${{ steps.files.outputs.win_file }}
+            ${{ steps.files.outputs.linux_file }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
