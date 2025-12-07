@@ -25,8 +25,35 @@ mkdir -p "${APP_DIR}/usr/bin"
 mkdir -p "${APP_DIR}/usr/share/applications"
 mkdir -p "${APP_DIR}/usr/share/icons/hicolor/256x256/apps"
 
-# Copy PyInstaller output
-cp -r dist/YT_Downloader/* "${APP_DIR}/usr/bin/"
+# Copy PyInstaller output (could be a single file or a directory)
+if [ -d "dist/YT_Downloader" ]; then
+    # PyInstaller created a directory (onefile=False)
+    cp -r dist/YT_Downloader/* "${APP_DIR}/usr/bin/"
+elif [ -f "dist/YT_Downloader" ]; then
+    # PyInstaller created a single executable (onefile=True)
+    cp dist/YT_Downloader "${APP_DIR}/usr/bin/YT_Downloader"
+    chmod +x "${APP_DIR}/usr/bin/YT_Downloader"
+else
+    echo "ERROR: Could not find PyInstaller output in dist/YT_Downloader"
+    exit 1
+fi
+
+# Copy ffmpeg binaries if they exist
+if [ -d "dist/YT_Downloader/ffmpeg" ]; then
+    cp -r dist/YT_Downloader/ffmpeg "${APP_DIR}/usr/bin/"
+elif [ -d "ffmpeg/linux" ]; then
+    mkdir -p "${APP_DIR}/usr/bin/ffmpeg/linux"
+    cp ffmpeg/linux/ffmpeg "${APP_DIR}/usr/bin/ffmpeg/linux/" 2>/dev/null || true
+    cp ffmpeg/linux/ffprobe "${APP_DIR}/usr/bin/ffmpeg/linux/" 2>/dev/null || true
+fi
+
+# Copy icons if they exist
+if [ -d "dist/YT_Downloader/icons" ]; then
+    cp -r dist/YT_Downloader/icons "${APP_DIR}/usr/bin/"
+elif [ -d "icons" ]; then
+    mkdir -p "${APP_DIR}/usr/bin/icons"
+    cp -r icons/* "${APP_DIR}/usr/bin/icons/" 2>/dev/null || true
+fi
 
 # Create desktop file
 cat > "${APP_DIR}/usr/share/applications/${APP_NAME}.desktop" <<EOF
