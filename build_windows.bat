@@ -1,10 +1,16 @@
 @echo off
 setlocal
+
+rem Daca VERSION nu e setata din exterior (ex: GitHub Actions), folosim default
+if "%VERSION%"=="" (
+    set VERSION=1.0.0
+)
+
 set APP_NAME=YT_Downloader
-set VERSION=1.0.0
 
 echo ========================================
 echo Building %APP_NAME% (Windows)
+echo Version: %VERSION%
 echo ========================================
 
 echo.
@@ -30,10 +36,11 @@ if exist %ISCC% (
 
 echo.
 echo Success!
-echo EXE: dist\%APP_NAME%\%APP_NAME%.exe
-echo Installer: dist\yt_mp3_mp4_download-setup-1.0.0.exe
+echo EXE should be in: dist\%APP_NAME%\%APP_NAME%.exe  (sau dist\%APP_NAME%.exe daca e onefile)
+echo Installer: dist\yt_mp3_mp4_download-setup-%VERSION%.exe
 goto :eof
 
 :error
+echo.
 echo Build failed. See messages above.
 exit /b 1
