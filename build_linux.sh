@@ -55,7 +55,7 @@ elif [ -d "icons" ]; then
     cp -r icons/* "${APP_DIR}/usr/bin/icons/" 2>/dev/null || true
 fi
 
-# Create desktop file
+# Create desktop file (in usr/share/applications)
 cat > "${APP_DIR}/usr/share/applications/${APP_NAME}.desktop" <<EOF
 [Desktop Entry]
 Name=YouTube MP3/MP4 Downloader
@@ -66,6 +66,9 @@ Type=Application
 Categories=AudioVideo;Network;
 StartupNotify=true
 EOF
+
+# Also copy .desktop to AppDir root (appimagetool sometimes caută aici)
+cp "${APP_DIR}/usr/share/applications/${APP_NAME}.desktop" "${APP_DIR}/${APP_NAME}.desktop"
 
 # Copy icon
 if [ -f "icons/YT_download_icon.png" ]; then
