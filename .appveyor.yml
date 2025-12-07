@@ -1,0 +1,12 @@
+# AppVeyor config for Windows builds (optional CI/CD)
+version: 1.0.0.{build}
+image: Visual Studio 2019
+
+build_script:
+  - pip install --upgrade pip pyinstaller
+  - pyinstaller pyinstaller_windows.spec
+  - '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss'
+
+artifacts:
+  - path: dist\yt_mp3_mp4_download-setup-1.0.0.exe
+    name: WindowsInstaller
