@@ -68,7 +68,7 @@ jobs:
           }
       
       - name: Upload Windows installer artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-installer
           path: dist/yt_mp3_mp4_download-setup-*.exe

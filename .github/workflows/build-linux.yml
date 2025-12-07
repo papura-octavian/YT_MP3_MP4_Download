@@ -55,7 +55,7 @@ jobs:
           ./build_linux.sh
       
       - name: Upload Linux AppImage artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-appimage
           path: dist/yt_mp3_mp4_download-*-x86_64.AppImage
