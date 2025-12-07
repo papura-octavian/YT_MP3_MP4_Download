@@ -11,7 +11,7 @@
 #define MyAppExeName "YT_Downloader.exe"
 
 [Setup]
-AppId={7F0520B7-39F3-49E3-9C0E-5E0E78F6E2B1}
+AppId={{7F0520B7-39F3-49E3-9C0E-5E0E78F6E2B1}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
